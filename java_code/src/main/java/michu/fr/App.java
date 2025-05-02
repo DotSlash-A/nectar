@@ -21,8 +21,9 @@ import michu.fr.circles.CircleUtils;
 import michu.fr.circles.models.*;
 // import michu.fr.lines.models.Coordinates; // Reusing Coordinates
 // import michu.fr.lines.models.GeneralLineInput; // Reusing GeneralLineInput
-
-
+import michu.fr.limits.LimitUtils;
+import michu.fr.limits.models.LimitRequest;
+import michu.fr.limits.models.LimitResponse;
 import michu.fr.matrix.MatrixUtils;
 // import michu.fr.matrix.models.*;
 
@@ -355,6 +356,36 @@ public class App {
               System.err.println("Error M9: " + e.getMessage());
           }
           
+          System.out.println("--------------------------------------------------");
+          System.out.println("\n--- Limit Calculations (Numerical Approximation) ---");
+
+        // Test cases
+        runLimitTest("(x^2 - 1)/(x - 1)", "x", "1");       // Expected: 2 (removable discontinuity)
+        runLimitTest("sin(x)/x", "x", "0");                // Expected: 1
+        runLimitTest("(1 + 1/x)^x", "x", "inf");           // Expected: e (approx 2.71828)
+        runLimitTest("1/x", "x", "0");                     // Expected: Does Not Exist (opposite infinities)
+        runLimitTest("1/x^2", "x", "0");                   // Expected: Infinity
+        runLimitTest("sin(1/x)", "x", "0");                // Expected: Does Not Exist (oscillation)
+        runLimitTest("x*sin(1/x)", "x", "0");              // Expected: 0 (Squeeze theorem)
+        runLimitTest("abs(x)/x", "x", "0");                // Expected: Does Not Exist (left=-1, right=1)
+        runLimitTest("x / sqrt(x**2 + 1)", "x", "inf");    // Expected: 1
+        runLimitTest("x / sqrt(x**2 + 1)", "x", "-inf");   // Expected: -1
+        runLimitTest("ln(x)", "x", "0");                   // Expected: -Infinity (evaluates right side only effectively)
+        runLimitTest("invalid syntax (", "x", "1");       // Expected: Expression Error
+        runLimitTest("x", "x", "invalid_limit");           // Expected: Input Error
+
+    } // end main
+
+    public static void runLimitTest(String expr, String var, String tendingTo) {
+        System.out.printf("Calculating limit of [%s] as %s -> %s:%n", expr, var, tendingTo);
+        try {
+            LimitRequest request = new LimitRequest(expr, var, tendingTo);
+            LimitResponse response = LimitUtils.calculateLimitApprox(request);
+            System.out.printf("  Result: %s (%s)%n", response.getLimitResult(), response.getExplanation());
+        } catch (Exception e) { // Catch request creation errors too
+             System.err.printf("  ERROR creating request/calculating limit: %s%n", e.getMessage());
+        }
+         System.out.println("--------------------------------------------------");
  
     }
 }
