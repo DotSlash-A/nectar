@@ -7,16 +7,33 @@ import michu.fr.lines.models.Coordinates;
 import michu.fr.lines.models.GeneralLineInput;
 import michu.fr.lines.models.LineEquationResult;
 import michu.fr.lines.models.SlopeInput;
-
+import michu.fr.matrix.models.AdjInvResponse;
+import michu.fr.matrix.models.ConstructedMatrixResponse;
+import michu.fr.matrix.models.DetInput;
+import michu.fr.matrix.models.DeterminantResponseAPI;
+import michu.fr.matrix.models.MatrixEqualityResponse;
+import michu.fr.matrix.models.MatrixFormulaInput;
+import michu.fr.matrix.models.MatrixInputAPI;
+import michu.fr.matrix.models.MatrixResponse;
+import michu.fr.matrix.models.MinorsCofactorsResponse;
+import michu.fr.matrix.models.TwoMatrixInput;
 import michu.fr.circles.CircleUtils;
 import michu.fr.circles.models.*;
-import michu.fr.lines.models.Coordinates; // Reusing Coordinates
-import michu.fr.lines.models.GeneralLineInput; // Reusing GeneralLineInput
+// import michu.fr.lines.models.Coordinates; // Reusing Coordinates
+// import michu.fr.lines.models.GeneralLineInput; // Reusing GeneralLineInput
 
 
+import michu.fr.matrix.MatrixUtils;
+// import michu.fr.matrix.models.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
+// import java.util.ArrayList;
+
+
+// import java.util.HashMap;
+
+// import java.util.Map;
 
 public class App {
     public static void main(String[] args) {
@@ -189,6 +206,155 @@ public class App {
           } catch (IllegalArgumentException e) {
               System.err.println("Error C7: " + e.getMessage());
           }
+
+
+
+           System.out.println("\n--- Matrix Calculations ---");
+
+        // Example M1: Determinant
+        try {
+            List<List<Double>> matList1 = Arrays.asList(
+                Arrays.asList(1.0, 2.0),
+                Arrays.asList(3.0, 4.0)
+            );
+            DetInput detInput = new DetInput(matList1);
+            DeterminantResponseAPI detResp = MatrixUtils.calculateDeterminant(detInput);
+            System.out.printf("Determinant of %s: %.4f%n", matList1, detResp.getDeterminant()); // Expected: -2.0
+
+            List<List<Double>> matList2 = Arrays.asList(
+                Arrays.asList(6.0, 1.0, 1.0),
+                Arrays.asList(4.0, -2.0, 5.0),
+                Arrays.asList(2.0, 8.0, 7.0)
+            );
+             DetInput detInput2 = new DetInput(matList2);
+            DeterminantResponseAPI detResp2 = MatrixUtils.calculateDeterminant(detInput2);
+            System.out.printf("Determinant of %s: %.4f%n", matList2, detResp2.getDeterminant()); // Expected: -306.0
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error M1: " + e.getMessage());
+        }
+
+        // Example M2: Matrix Equality
+        try {
+            List<List<Double>> matA = Arrays.asList(Arrays.asList(1.0, 0.0), Arrays.asList(0.0, 1.0));
+            List<List<Double>> matB = Arrays.asList(Arrays.asList(1.0, 0.0), Arrays.asList(0.0, 1.0));
+            List<List<Double>> matC = Arrays.asList(Arrays.asList(1.0, 0.0), Arrays.asList(0.0, 2.0));
+             List<List<Double>> matD = Arrays.asList(Arrays.asList(1.0, 0.0)); // Different dims
+
+            TwoMatrixInput inputAB = new TwoMatrixInput(matA, matB);
+            TwoMatrixInput inputAC = new TwoMatrixInput(matA, matC);
+            TwoMatrixInput inputAD = new TwoMatrixInput(matA, matD);
+
+            MatrixEqualityResponse respAB = MatrixUtils.compareMatrices(inputAB);
+            MatrixEqualityResponse respAC = MatrixUtils.compareMatrices(inputAC);
+            MatrixEqualityResponse respAD = MatrixUtils.compareMatrices(inputAD);
+
+            System.out.printf("Compare A vs B: %s (%s)%n", respAB.areEqual(), respAB.getReason()); // true
+            System.out.printf("Compare A vs C: %s (%s)%n", respAC.areEqual(), respAC.getReason()); // false (mismatch)
+            System.out.printf("Compare A vs D: %s (%s)%n", respAD.areEqual(), respAD.getReason()); // false (dims)
+
+        } catch (Exception e) { // Catch broader exceptions if needed
+             System.err.println("Error M2: " + e.getMessage());
+        }
+
+         // Example M3: Construct from Formula
+         try {
+             MatrixFormulaInput formulaInput = new MatrixFormulaInput(2, 3, "i + 2*j"); // 2x3 matrix
+             ConstructedMatrixResponse formulaResp = MatrixUtils.constructMatrixFromFormula(formulaInput);
+             System.out.printf("Matrix from formula '%s' (%dx%d):%n%s%n",
+                 formulaResp.getFormulaUsed(), formulaResp.getRows(), formulaResp.getColumns(),
+                 formulaResp.getConstructedMatrix());
+             // Expected: [[3.0, 5.0, 7.0], [4.0, 6.0, 8.0]]
+         } catch ( RuntimeException e) {
+             System.err.println("Error M3: " + e.getMessage());
+         }
+
+        // Example M4: Addition
+        try {
+            List<List<Double>> addA = Arrays.asList(Arrays.asList(1.0, 2.0), Arrays.asList(3.0, 4.0));
+            List<List<Double>> addB = Arrays.asList(Arrays.asList(5.0, 6.0), Arrays.asList(7.0, 8.0));
+            TwoMatrixInput addInput = new TwoMatrixInput(addA, addB);
+            MatrixResponse addResp = MatrixUtils.addMatricesAPI(addInput);
+            System.out.printf("%s + %s = %s%n", addA, addB, addResp.getResultMatrix());
+             // Expected: [[6.0, 8.0], [10.0, 12.0]]
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error M4: " + e.getMessage());
+        }
+
+        // Example M5: Scalar Multiply
+        try {
+            List<List<Double>> scalarMatList = Arrays.asList(Arrays.asList(1.0, 2.0), Arrays.asList(3.0, 4.0));
+            MatrixInputAPI scalarMatInput = new MatrixInputAPI(scalarMatList);
+            double scalar = 3.0;
+            MatrixResponse scalarResp = MatrixUtils.multiplyMatrixByScalarAPI(scalarMatInput, scalar);
+            System.out.printf("%.1f * %s = %s%n", scalar, scalarMatList, scalarResp.getResultMatrix());
+            // Expected: [[3.0, 6.0], [9.0, 12.0]]
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error M5: " + e.getMessage());
+        }
+
+        // Example M6: Matrix Multiply
+        try {
+            List<List<Double>> mulA = Arrays.asList(Arrays.asList(1.0, 2.0)); // 1x2
+            List<List<Double>> mulB = Arrays.asList(Arrays.asList(3.0), Arrays.asList(4.0)); // 2x1
+            TwoMatrixInput mulInput = new TwoMatrixInput(mulA, mulB);
+            MatrixResponse mulResp = MatrixUtils.multiplyMatricesAPI(mulInput);
+            System.out.printf("%s * %s = %s%n", mulA, mulB, mulResp.getResultMatrix());
+             // Expected: [[1*3 + 2*4]] = [[11.0]]
+        } catch (IllegalArgumentException e) {
+             System.err.println("Error M6: " + e.getMessage());
+        }
+
+        // Example M7: Transpose
+        try {
+             List<List<Double>> transMatList = Arrays.asList(Arrays.asList(1.0, 2.0, 3.0), Arrays.asList(4.0, 5.0, 6.0)); // 2x3
+             MatrixInputAPI transInput = new MatrixInputAPI(transMatList);
+             MatrixResponse transResp = MatrixUtils.transposeMatrixAPI(transInput);
+             System.out.printf("Transpose of %s is %s%n", transMatList, transResp.getResultMatrix());
+             // Expected: [[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]] (3x2)
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error M7: " + e.getMessage());
+        }
+
+         // Example M8: Minors/Cofactors
+         try {
+            List<List<Double>> minorMatList = Arrays.asList(
+                Arrays.asList(1.0, 2.0, 3.0),
+                Arrays.asList(0.0, 4.0, 5.0),
+                Arrays.asList(1.0, 0.0, 6.0)
+            );
+            DetInput minorInput = new DetInput(minorMatList);
+            MinorsCofactorsResponse minorResp = MatrixUtils.calculateMinorsAndCofactors(minorInput);
+            System.out.printf("For Matrix: %s%n", minorMatList);
+            System.out.printf("  Minors: %s%n", minorResp.getMatrixOfMinors());
+            // Expected Minors: [[24, -5, -4], [12, 3, -2], [-2, 5, 4]]
+            System.out.printf("  Cofactors: %s%n", minorResp.getMatrixOfCofactors());
+             // Expected Cofactors: [[24, 5, -4], [-12, 3, 2], [-2, -5, 4]]
+            System.out.printf("  Determinant: %.4f%n", minorResp.getDeterminant()); // Expected: 22
+         } catch (IllegalArgumentException e) {
+             System.err.println("Error M8: " + e.getMessage());
+         }
+
+          // Example M9: Adjoint/Inverse
+          try {
+            // Use the same matrix as M8, determinant is 22
+            List<List<Double>> invMatList = Arrays.asList(
+                 Arrays.asList(1.0, 2.0, 3.0),
+                 Arrays.asList(0.0, 4.0, 5.0),
+                 Arrays.asList(1.0, 0.0, 6.0)
+             );
+             MatrixInputAPI invInput = new MatrixInputAPI(invMatList);
+             AdjInvResponse invResp = MatrixUtils.calculateAdjointAndInverse(invInput);
+             System.out.printf("For Matrix: %s%n", invMatList);
+             System.out.printf("  Determinant: %.4f%n", invResp.getDeterminant());
+             System.out.printf("  Is Invertible: %s%n", invResp.isInvertible());
+             System.out.printf("  Adjoint: %s%n", invResp.getAdjointMatrix());
+             // Expected Adjoint (Transpose of Cofactors): [[24, -12, -2], [5, 3, -5], [-4, 2, 4]]
+             System.out.printf("  Inverse: %s%n", invResp.getInverseMatrix());
+             // Expected Inverse: Adjoint / 22
+          } catch (IllegalArgumentException e) {
+              System.err.println("Error M9: " + e.getMessage());
+          }
+          
  
     }
 }
