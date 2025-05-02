@@ -6,7 +6,7 @@ import michu.fr.lines.models.GeneralLineInput;
 import michu.fr.lines.models.LineEquationResult;
 import michu.fr.lines.models.SlopeInput;
 
-import java.util.Map;
+// import java.util.Map;
 import java.util.Objects;
 
 public class LineUtils {
@@ -67,6 +67,7 @@ public class LineUtils {
              throw new IllegalArgumentException("Calculation resulted in division by zero. Check inputs.", e);
         }
      }
+    
 
      // Overload using angle needs similar getter changes for input
      public static double findMissingSlopeVariableWithAngle(String variableToFind, SlopeInput input) {
