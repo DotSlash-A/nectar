@@ -1,7 +1,8 @@
 package michu.fr.limits;
 
 import michu.fr.limits.models.LimitRequest;
-import michu.fr.limits.models.LimitResponse;
+// Ensure the correct package path for LimitResponse
+import michu.fr.limits.models.LimitResponse; // Update this path if the class is in a different package
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;

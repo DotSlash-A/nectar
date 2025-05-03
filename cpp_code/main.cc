@@ -1,5 +1,7 @@
 #include "lines/slope.h" // Use relative path from project root
 #include "lines/geometry_types.h"
+
+#include "matrix_utils.h" 
 #include <iostream>
 #include <vector>
 #include <optional>
