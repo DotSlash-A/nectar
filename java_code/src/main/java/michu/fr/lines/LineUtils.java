@@ -199,7 +199,7 @@ public class LineUtils {
         if (Math.abs(xIntercept) < EPSILON || Math.abs(yIntercept) < EPSILON) {
             throw new IllegalArgumentException("Intercepts cannot be zero for the standard intercept form x/a + y/b = 1.");
         }
-        return String.format("x / %.2f + y / %.2f = 1", xIntercept, yIntercept);
+        return String.format("x / %.3f + y / %.2f = 1", xIntercept, yIntercept);
     }
 
      public static String getSymmetricForm(double thetaDegrees, Coordinates p1, Coordinates p2) {
