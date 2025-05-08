@@ -1,8 +1,8 @@
 package michu.fr.progressions;
 
 // Import the utility classes
-import michu.fr.progressions.ArithmeticProgressionUtils;
-import michu.fr.progressions.GeometricProgressionUtils;
+// import michu.fr.progressions.ArithmeticProgressionUtils;
+// import michu.fr.progressions.GeometricProgressionUtils;
 
 // Import the model classes
 import michu.fr.progressions.models.*;
