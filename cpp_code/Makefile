@@ -1,22 +1,18 @@
 # Compiler
 CXX := g++
 # Compiler flags for C++17
-CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -g 
-# Include directories
-INCLUDE_DIRS := -I. -Ireal_numbers -Ilinear_equations # Added linear_equations
+CXXFLAGS := -std=c++17 -Wall -Wextra -Wno-unused-parameter -pedantic -g
+# Include directories: current, and the 'three_d_geometry' subdirectory
+INCLUDE_DIRS := -I. -Ithree_d_geometry
 
 # Source files
-SRCS := main.cc \
-        real_numbers/real_numbers_utils.cc \
-        linear_equations/linear_equations_utils.cc # Added new source
+SRCS := main.cc three_d_geometry/three_d_utils.cc
 
-# Object files
-OBJS := main.o \
-        real_numbers_utils.o \
-        linear_equations_utils.o # Added new object
+# Object files (will be created in the current directory)
+OBJS := main.o three_d_utils.o
 
 # Executable name
-TARGET := math_app # Renamed for general math app
+TARGET := 3d_geometry_app_cpp
 
 # Default target
 all: $(TARGET)
@@ -28,17 +24,12 @@ $(TARGET): $(OBJS)
 	@echo "Built $(TARGET) successfully."
 
 # Rule to compile main.cc
-main.o: main.cc real_numbers/real_numbers_utils.h linear_equations/linear_equations_utils.h
+main.o: main.cc three_d_geometry/three_d_utils.h three_d_geometry/three_d_types.h
 	@echo "Compiling $<"
 	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
-# Rule to compile real_numbers_utils.cc
-real_numbers_utils.o: real_numbers/real_numbers_utils.cc real_numbers/real_numbers_utils.h real_numbers/real_numbers_types.h
-	@echo "Compiling $<"
-	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
-
-# Rule to compile linear_equations_utils.cc (NEW)
-linear_equations_utils.o: linear_equations/linear_equations_utils.cc linear_equations/linear_equations_utils.h linear_equations/linear_equations_types.h
+# Rule to compile three_d_utils.cc
+three_d_utils.o: three_d_geometry/three_d_utils.cc three_d_geometry/three_d_utils.h three_d_geometry/three_d_types.h
 	@echo "Compiling $<"
 	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 

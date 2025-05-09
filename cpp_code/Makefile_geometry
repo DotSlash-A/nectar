@@ -1,0 +1,45 @@
+# Compiler
+CXX := g++
+# Compiler flags for C++17
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -g
+# Include directories
+INCLUDE_DIRS := -I. -Igeometry
+
+# Source files
+SRCS := main_geometry.cc \
+        geometry/solid_geometry_utils.cc
+
+# Object files
+OBJS := main_geometry.o \
+        solid_geometry_utils.o
+
+# Executable name
+TARGET := geometry_app
+
+# Default target
+all: $(TARGET)
+
+# Link the executable
+$(TARGET): $(OBJS)
+	@echo "Linking $@"
+	$(CXX) $(CXXFLAGS) $^ -o $@
+	@echo "Built $(TARGET) successfully."
+
+# Rule to compile main_geometry.cc
+main_geometry.o: main_geometry.cc geometry/solid_geometry_utils.h geometry/geometry_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Rule to compile solid_geometry_utils.cc
+solid_geometry_utils.o: geometry/solid_geometry_utils.cc geometry/solid_geometry_utils.h geometry/geometry_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Target to clean up
+clean:
+	@echo "Cleaning up..."
+	-rm -f $(TARGET) $(OBJS)
+	@echo "Clean complete."
+
+# Phony targets
+.PHONY: all clean

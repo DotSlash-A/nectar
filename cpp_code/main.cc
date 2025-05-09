@@ -1,121 +1,99 @@
-// #include <iostream>
-// #include <vector>
-// #include <map>
-// #include <stdexcept> // For std::exception
-// #include "real_numbers/real_numbers_utils.h"       // Existing
-// #include "linear_equations/linear_equations_utils.h" // New
+#include <iostream>
+#include <vector>
+#include <stdexcept> // For std::exception
+#include "three_d_geometry/three_d_utils.h" // Correct path
 
-// // Helper to print maps (if not already present from RealNumbers part)
-// template<typename K, typename V>
-// void printMapIfNotThere(const std::map<K, V>& m, const std::string& map_name = "Map") {
-//     std::cout << map_name << ": {";
-//     bool first = true;
-//     for (const auto& pair : m) {
-//         if (!first) {
-//             std::cout << ", ";
-//         }
-//         std::cout << pair.first << ":" << pair.second;
-//         first = false;
-//     }
-//     std::cout << "}";
-// }
+// Using namespace for convenience in main
+using namespace michu_fr::three_d_geometry;
 
+void printSection(const std::string& title) {
+    std::cout << "\n--- " << title << " ---" << std::endl;
+}
 
-// int main() {
-//     std::cout << "--- Math C++ Examples (C++17) ---" << std::endl;
+int main() {
+    std::cout << "--- 3D Geometry C++ Examples (C++17) ---" << std::endl;
 
-//     // --- REAL NUMBERS EXAMPLES (Keep these from previous version) ---
-//     std::cout << "\n\n--- Real Numbers Examples ---" << std::endl;
-//     using namespace michu_fr::real_numbers; // For Real Numbers
-
-//     // ... (Keep all your Real Numbers examples here as before) ...
-//     // Example:
-//     std::cout << "\n1. Euclid's Division Lemma (Real Numbers):" << std::endl;
-//     try {
-//         EuclidLemmaResult lemma1 = euclidsDivisionLemma(455, 42);
-//         std::cout << "   " << lemma1.toString() << std::endl;
-//     } catch (const std::exception& e) {
-//         std::cerr << "   Error: " << e.what() << std::endl;
-//     }
-//     // ... (and so on for all other Real Numbers examples) ...
-//     std::cout << "\n7. Polynomial Analysis (Real Numbers):" << std::endl;
-//     std::vector<double> p1_coeffs = {1.0, -5.0, 6.0}; // x^2 - 5x + 6
-//     PolynomialAnalysisResult poly_res1 = analyzePolynomial(p1_coeffs);
-//     std::cout << "   Poly {1, -5, 6}: " << poly_res1.toString() << std::endl;
+    try {
+        printSection("Vector Algebra");
+        Vector3D v1(1, 2, 3), v2(4, -1, 2);
+        std::cout << "v1 = " << v1.toString() << std::endl;
+        std::cout << "v2 = " << v2.toString() << std::endl;
+        std::cout << "v1 + v2 = " << addVectors(v1, v2).toString() << std::endl;
+        std::cout << "Magnitude of v1: " << vectorMagnitude(v1).toString() << std::endl;
+        std::cout << "Unit vector of v1: " << unitVector(v1).toString() << std::endl;
+        Point3D pA(1,0,1), pB(3,2,-1);
+        std::cout << "Vector P_A P_B: " << vectorFromTwoPoints(pA, pB).toString() << std::endl;
+        std::cout << "Section formula (internal 1:2 for pA,pB): " << sectionFormula(pA, pB, 1, 2, true).toString() << std::endl;
+        std::vector<Point3D> points_col = {Point3D(1,1,1), Point3D(2,2,2), Point3D(3,3,3)};
+        std::cout << "Collinearity check (collinear): " << checkCollinearityPoints(points_col).toString() << std::endl;
 
 
-//     // --- LINEAR EQUATIONS EXAMPLES ---
-//     std::cout << "\n\n--- Pair of Linear Equations Examples ---" << std::endl;
-//     using namespace michu_fr::linear_equations; // For Linear Equations
+        printSection("Dot and Cross Products");
+        Vector3D dp_v1(1,-1,2), dp_v2(2,3,-1);
+        std::cout << "Dot Product (v1.v2): " << dotProduct(dp_v1, dp_v2).toString() << std::endl;
+        std::cout << "Projection of v1 on v2: " << projectionVectorOnVector(dp_v1, dp_v2).toString() << std::endl;
+        Vector3D cp_v1(2,1,-1), cp_v2(1,-1,2);
+        std::cout << "Cross Product (v1 x v2): " << crossProduct(cp_v1, cp_v2).toString() << std::endl;
+        Point3D t_p1(1,1,0), t_p2(3,1,0), t_p3(1,3,0); // Triangle in xy-plane, base 2, height 2, area 2
+        std::cout << "Area of Triangle (points): " << areaTrianglePoints(t_p1, t_p2, t_p3).toString() << std::endl;
+        std::cout << "Scalar Triple Product [i j k]: " << scalarTripleProduct(Vector3D(1,0,0), Vector3D(0,1,0), Vector3D(0,0,1)).toString() << std::endl;
 
-//     // Example Equations (a1x + b1y = c1, a2x + b2y = c2)
-//     double a1_uniq=1, b1_uniq=1, c1_uniq=5;
-//     double a2_uniq=2, b2_uniq=-3, c2_uniq=4; // Unique: x=3.8, y=1.2
+        printSection("Direction Cosines and Ratios");
+        Vector3D dir_vec(3,4,0); // mag 5
+        DirectionRatios dr_ex = directionRatiosFromVector(dir_vec);
+        std::cout << "DR for " << dir_vec.toString() << ": " << dr_ex.toString() << std::endl;
+        std::cout << "DC from DR " << dr_ex.toString() << ": " << directionCosinesFromRatios(dr_ex).toString() << std::endl;
 
-//     double a1_inf=2, b1_inf=3, c1_inf=9;
-//     double a2_inf=4, b2_inf=6, c2_inf=18; // Infinite
+        printSection("Straight Line in Space");
+        Point3D line_p0(1,2,3); Vector3D line_dir_v(2,-1,2);
+        LineEquationResult line_eq_vec = lineEqVectorForm(line_p0, line_dir_v);
+        std::cout << "Line (Vector Form): " << line_eq_vec.toString() << std::endl;
+        DirectionRatios line_dr_cart(2,0,-3);
+        std::cout << "Line (Cartesian Symm): " << lineEqCartesianSymmetric(line_p0, line_dr_cart).toString() << std::endl;
+        std::cout << "Angle between (1,1,0) and (1,-1,1): " << angleBetweenLines(Vector3D(1,1,0), Vector3D(1,-1,1)).toString() << std::endl;
 
-//     double a1_par=1, b1_par=2, c1_par=4;
-//     double a2_par=2, b2_par=4, c2_par=12; // Parallel
-
-//     std::cout << "\n1. Consistency Check (Linear Equations):" << std::endl;
-//     ConsistencyCheckResult cc1 = checkConsistency(a1_uniq, b1_uniq, c1_uniq, a2_uniq, b2_uniq, c2_uniq);
-//     std::cout << "   Unique Sys: " << cc1.toString() << std::endl;
-
-//     ConsistencyCheckResult cc2 = checkConsistency(a1_inf, b1_inf, c1_inf, a2_inf, b2_inf, c2_inf);
-//     std::cout << "   Infinite Sys: " << cc2.toString() << std::endl;
-
-//     ConsistencyCheckResult cc3 = checkConsistency(a1_par, b1_par, c1_par, a2_par, b2_par, c2_par);
-//     std::cout << "   Parallel Sys: " << cc3.toString() << std::endl;
-
-
-//     std::cout << "\n2. General Solver (Linear Equations):" << std::endl;
-//     SolutionResult sol_gen1 = solveGeneral(a1_uniq, b1_uniq, c1_uniq, a2_uniq, b2_uniq, c2_uniq);
-//     std::cout << "   Unique Sys (General): " << sol_gen1.toString() << std::endl;
-//     if (!sol_gen1.steps.empty()) std::cout << "     Steps: " << sol_gen1.steps[0] << "..." << std::endl;
-
-
-//     SolutionResult sol_gen2 = solveGeneral(a1_inf, b1_inf, c1_inf, a2_inf, b2_inf, c2_inf);
-//     std::cout << "   Infinite Sys (General): " << sol_gen2.toString() << std::endl;
-
-//     std::cout << "\n3. Solver by Substitution (Linear Equations):" << std::endl;
-//     // Example: x + 2y = 3  (1,2,3)
-//     //          7x - 15y = 2 (7,-15,2)
-//     // x = 3-2y => 7(3-2y) - 15y = 2 => 21 - 14y - 15y = 2 => 21 - 29y = 2 => -29y = -19 => y = 19/29
-//     // x = 3 - 2(19/29) = (87-38)/29 = 49/29
-//     SolutionResult sol_sub1 = solveBySubstitution(1, 2, 3, 7, -15, 2);
-//     std::cout << "   Solve 1x+2y=3, 7x-15y=2 (Substitution): " << sol_sub1.toString() << std::endl;
-//     for(const auto& step : sol_sub1.steps) { std::cout << "      Step: " << step << std::endl;}
-
-//     std::cout << "\n4. Solver by Elimination (Linear Equations):" << std::endl;
-//     // Example: 9x - 4y = 2000
-//     //          7x - 3y = 2000
-//     // (27x - 12y = 6000) - (28x - 12y = 8000) => -x = -2000 => x = 2000
-//     // 9(2000) - 4y = 2000 => 18000 - 4y = 2000 => 16000 = 4y => y = 4000
-//     SolutionResult sol_elim1 = solveByElimination(9, -4, 2000, 7, -3, 2000);
-//     std::cout << "   Solve 9x-4y=2000, 7x-3y=2000 (Elimination): " << sol_elim1.toString() << std::endl;
-//     for(const auto& step : sol_elim1.steps) { std::cout << "      Step: " << step << std::endl;}
+        Point3D l1p(1,0,1), l2p(0,1,0); Vector3D l1d(1,1,1), l2d(1,-1,0); // Skew lines
+        std::cout << "Lines Relationship (skew): " << linesRelationship(l1p, l1d, l2p, l2d).toString() << std::endl;
+        Point3D dist_pt(1,1,5);
+        std::cout << "Distance Point to Line: " << distancePointLine(dist_pt, line_p0, line_dir_v).toString() << std::endl;
+        std::cout << "Image of Point in Line: " << imageOfPointInLine(dist_pt, line_eq_vec).toString() << std::endl;
 
 
-//     std::cout << "\n5. Solver by Cross-Multiplication (Linear Equations):" << std::endl;
-//     // Example: 2x + y = 5  => 2x + y - 5 = 0  (c_form = -5)
-//     //          3x + 2y = 8 => 3x + 2y - 8 = 0 (c_form = -8)
-//     // Solution: x=2, y=1
-//     SolutionResult sol_cross1 = solveByCrossMultiplication(2, 1, -5, 3, 2, -8);
-//     std::cout << "   Solve 2x+y-5=0, 3x+2y-8=0 (Cross-Mult): " << sol_cross1.toString() << std::endl;
-//     for(const auto& step : sol_cross1.steps) { std::cout << "      Step: " << step << std::endl;}
+        printSection("The Plane");
+        Vector3D plane_norm_unit(0,0,1);
+        PlaneEquationResult plane_eq_norm = planeEqVectorNormalForm(plane_norm_unit, 5);
+        std::cout << "Plane (Vector Normal Form z=5): " << plane_eq_norm.toString() << std::endl;
+        PlaneEquationCoefficients plane_coeffs(1,1,1,-3); // x+y+z-3=0
+        PlaneEquationResult plane_eq_coeff = planeEqFromCoefficients(plane_coeffs);
+        std::cout << "Plane (from coeffs x+y+z-3=0): " << plane_eq_coeff.toString() << std::endl;
+        Point3D pl_p1(1,0,0), pl_p2(0,1,0), pl_p3(0,0,1); // x+y+z-1=0
+        PlaneEquationResult plane_eq_3pts = planeEqFromThreePoints(pl_p1, pl_p2, pl_p3);
+        std::cout << "Plane (from 3 points for x+y+z-1=0): " << plane_eq_3pts.toString() << std::endl;
+
+        std::cout << "Angle between x+y+z-3=0 and x+y+z-1=0 (parallel): " << angleBetweenPlanes(plane_eq_coeff, plane_eq_3pts).toString() << std::endl;
+        LineEquationResult line_for_plane_ops = lineEqVectorForm(Point3D(0,0,0), Vector3D(1,1,-2)); // Line passes through x+y+z-3=0 if point (1,1,1) used
+        std::cout << "Angle Line and Plane (x+y+z-3=0): " << angleLinePlane(line_for_plane_ops, plane_eq_coeff).toString() << std::endl;
+        std::cout << "Relationship Line and Plane: " << relationshipLinePlane(line_for_plane_ops, plane_coeffs).toString() << std::endl;
+        Point3D pt_dist_plane(4,4,4);
+        std::cout << "Distance Point to Plane (x+y+z-3=0): " << distancePointPlane(pt_dist_plane, plane_coeffs).toString() << std::endl;
+        std::cout << "Intersection Line and Plane: " << intersectionLinePlane(line_for_plane_ops, plane_coeffs).toString() << std::endl;
+        
+        PlaneEquationCoefficients pcoeffs1(1,1,1,-6); // x+y+z-6=0
+        PlaneEquationCoefficients pcoeffs2(1,-1,1,-2); // x-y+z-2=0
+        std::cout << "Intersection of Two Planes: " << intersectionTwoPlanes(pcoeffs1, pcoeffs2).toString() << std::endl;
+        
+        LineEquationResult lineC1 = lineEqVectorForm(Point3D(1,1,0), Vector3D(1,-1,2));
+        LineEquationResult lineC2 = lineEqVectorForm(Point3D(2,0,2), Vector3D(-1,1,0)); // Intersecting
+        std::cout << "Coplanarity of Lines (Intersecting): " << checkCoplanarityLines(lineC1, lineC2).toString() << std::endl;
+        
+        std::cout << "Image of Point in Plane (x+y+z-3=0): " << imageOfPointInPlane(pt_dist_plane, plane_coeffs).toString() << std::endl;
 
 
-//     std::cout << "\n6. Reducible Equations Solver (Linear Equations):" << std::endl;
-//     // Example: 2/x + 3/y = 13. Let u=1/x, v=1/y. So, 2u + 3v = 13
-//     //          5/x - 4/y = -2.                         5u - 4v = -2
-//     // Solving for u,v: u=2, v=3. So x=1/2, y=1/3.
-//     ReducibleSolutionResult red_sol1 = solveReducible(
-//             2, 3, 13,
-//             5, -4, -2,
-//             "1/x", "1/y"
-//     );
-//     std::cout << "   Reducible 2/x+3/y=13, 5/x-4/y=-2:\n" << red_sol1.toString() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "\n*** An error occurred: " << e.what() << " ***" << std::endl;
+        return 1;
+    }
 
-//     return 0;
-// }
+    std::cout << "\n--- End of 3D Geometry Examples ---" << std::endl;
+    return 0;
+}

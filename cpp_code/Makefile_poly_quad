@@ -1,0 +1,54 @@
+# Compiler
+CXX := g++
+# Compiler flags for C++17
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -g
+# Include directories
+INCLUDE_DIRS := -I. -Ipolynomials_quadratics
+
+# Source files
+# main_poly_quad.cc is in the current directory
+# utils are in polynomials_quadratics/
+SRCS := main_poly_quad.cc \
+        polynomials_quadratics/polynomial_utils.cc \
+        polynomials_quadratics/quadratic_utils.cc
+
+# Object files (will be created in the current directory for simplicity)
+OBJS := main_poly_quad.o \
+        polynomial_utils.o \
+        quadratic_utils.o
+
+# Executable name
+TARGET := poly_quad_app_cpp
+
+# Default target
+all: $(TARGET)
+
+# Link the executable
+$(TARGET): $(OBJS)
+	@echo "Linking $@"
+	$(CXX) $(CXXFLAGS) $^ -o $@
+	@echo "Built $(TARGET) successfully."
+
+# Rule to compile main_poly_quad.cc
+main_poly_quad.o: main_poly_quad.cc polynomials_quadratics/polynomial_utils.h polynomials_quadratics/quadratic_utils.h polynomials_quadratics/polynomial_quadratic_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Rule to compile polynomial_utils.cc
+polynomial_utils.o: polynomials_quadratics/polynomial_utils.cc polynomials_quadratics/polynomial_utils.h polynomials_quadratics/polynomial_quadratic_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Rule to compile quadratic_utils.cc
+quadratic_utils.o: polynomials_quadratics/quadratic_utils.cc polynomials_quadratics/quadratic_utils.h polynomials_quadratics/polynomial_quadratic_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Target to clean up
+clean:
+	@echo "Cleaning up..."
+	-rm -f $(TARGET) $(OBJS)
+	@echo "Clean complete."
+
+# Phony targets
+.PHONY: all clean
