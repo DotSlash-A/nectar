@@ -1,0 +1,172 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <stdexcept> // For std::exception
+#include "real_numbers/real_numbers_utils.h"
+
+// Helper to print maps
+template<typename K, typename V>
+void printMap(const std::map<K, V>& m, const std::string& map_name = "Map") {
+    std::cout << map_name << ": {";
+    bool first = true;
+    for (const auto& pair : m) {
+        if (!first) {
+            std::cout << ", ";
+        }
+        std::cout << pair.first << ":" << pair.second;
+        first = false;
+    }
+    std::cout << "}";
+}
+
+int main() {
+    std::cout << "--- Real Numbers C++ Examples (C++17) ---" << std::endl;
+
+    using namespace michu_fr::real_numbers;
+
+    // 1. Euclid's Division Lemma
+    std::cout << "\n1. Euclid's Division Lemma:" << std::endl;
+    try {
+        EuclidLemmaResult lemma1 = euclidsDivisionLemma(455, 42);
+        std::cout << "   " << lemma1.toString() << std::endl;
+        EuclidLemmaResult lemma2 = euclidsDivisionLemma(10, 3);
+        std::cout << "   " << lemma2.equation << std::endl;
+        EuclidLemmaResult lemma3 = euclidsDivisionLemma(-10, 3); // Expected: -10 = 3 * (-4) + 2
+        std::cout << "   " << lemma3.toString() << std::endl;
+        EuclidLemmaResult lemma4 = euclidsDivisionLemma(10, -3); // Expected: 10 = -3 * (-3) + 1
+        std::cout << "   " << lemma4.toString() << std::endl;
+        EuclidLemmaResult lemma5 = euclidsDivisionLemma(-10, -3); // Expected: -10 = -3 * (4) + 2
+        std::cout << "   " << lemma5.toString() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "   Error: " << e.what() << std::endl;
+    }
+
+    // 2. Euclid's Algorithm for HCF
+    std::cout << "\n2. Euclid's Algorithm for HCF:" << std::endl;
+    try {
+        HCFResult hcf1 = euclidsAlgorithmHCF(455, 42);
+        std::cout << "   HCF(455, 42): " << hcf1.hcf << std::endl;
+        HCFResult hcf2 = euclidsAlgorithmHCF(96, 404);
+        std::cout << "   HCF(96, 404): " << hcf2.hcf << std::endl;
+        HCFResult hcf3 = euclidsAlgorithmHCF(17, 0);
+        std::cout << "   HCF(17, 0): " << hcf3.hcf << std::endl;
+        // HCFResult hcf4 = euclidsAlgorithmHCF(0, 0); // This will throw
+        // std::cout << "   HCF(0, 0): " << hcf4.hcf << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "   HCF Error: " << e.what() << std::endl;
+    }
+
+
+    // 3. Prime Factorization
+    std::cout << "\n3. Prime Factorization:" << std::endl;
+    try {
+        PrimeFactorizationResult pf1 = getPrimeFactorization(3825);
+        std::cout << "   Prime factors of 3825: "; printMap(pf1.factors); std::cout << std::endl;
+        PrimeFactorizationResult pf2 = getPrimeFactorization(96);
+        std::cout << "   " << pf2.toString() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "   Error: " << e.what() << std::endl;
+    }
+
+    // 4. HCF and LCM Details
+    std::cout << "\n4. HCF and LCM Details:" << std::endl;
+    try {
+        HCFAndLCMResult details1 = getHCFAndLCMDetails(96, 404);
+        std::cout << "   Details for 96 and 404: " << details1.toString() << std::endl;
+        std::cout << "   LCM(90, 144) direct: " << calculateLCM(90, 144) << std::endl;
+        HCFAndLCMResult details2 = getHCFAndLCMDetails(1, 5); // Test with 1
+        std::cout << "   Details for 1 and 5: " << details2.toString() << std::endl;
+
+    } catch (const std::exception& e) {
+        std::cerr << "   HCF/LCM Error: " << e.what() << std::endl;
+    }
+    try {
+        // Test LCM overflow (might not overflow with long long for these, but good to have robust calculateLCM)
+        long long large_lcm = calculateLCM(200000, 300000); // HCF is 100000, LCM = 200000*300000 / 100000 = 600000
+        std::cout << "   LCM(200000, 300000): " << large_lcm << std::endl;
+    } catch (const std::exception& e) {
+         std::cerr << "   LCM Overflow test error: " << e.what() << std::endl;
+    }
+
+
+    // 5. Irrationality Check (for sqrt)
+    std::cout << "\n5. Irrationality Check (sqrt):" << std::endl;
+    IrrationalityCheckResult irr1 = checkSqrtIrrationality(5);
+    std::cout << "   sqrt(5): " << irr1.toString() << std::endl;
+    IrrationalityCheckResult irr2 = checkSqrtIrrationality(9);
+    std::cout << "   sqrt(9): " << irr2.toString() << std::endl;
+    IrrationalityCheckResult irr3 = checkSqrtIrrationality(6);
+    std::cout << "   sqrt(6): " << irr3.toString() << std::endl;
+
+    // 6. Decimal Expansion Type
+    std::cout << "\n6. Decimal Expansion Type:" << std::endl;
+    try {
+        DecimalExpansionResult de1 = getDecimalExpansionType(13, 3125);
+        std::cout << "   13/3125: " << de1.toString() << std::endl;
+        DecimalExpansionResult de2 = getDecimalExpansionType(64, 455);
+        std::cout << "   64/455: " << de2.toString() << std::endl;
+        DecimalExpansionResult de3 = getDecimalExpansionType(77, 210); 
+        std::cout << "   77/210 (simplifies to 11/30): " << de3.toString() << std::endl;
+        DecimalExpansionResult de4 = getDecimalExpansionType(1, 1); 
+        std::cout << "   1/1: " << de4.toString() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "   Decimal Expansion Error: " << e.what() << std::endl;
+    }
+
+
+
+    return 0;
+}
+
+
+
+-----------------------------------------------------------------------makefile
+# Compiler
+CXX := g++
+# Compiler flags for C++17
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -g 
+# Include directories: current, and the 'real_numbers' subdirectory
+INCLUDE_DIRS := -I. -Ireal_numbers
+
+# Source files
+# main.cc is in the current directory (cpp_real_numbers_project/)
+# real_numbers_utils.cc is in real_numbers/
+SRCS := main.cc real_numbers/real_numbers_utils.cc
+
+# Object files (will be created in the current directory)
+# OBJS := $(SRCS:.cc=.o) # This pattern rule might not work well with subdir sources without VPATH or more complex rules
+# For simplicity, we'll list them or compile all srcs directly
+OBJS := main.o real_numbers_utils.o
+
+
+# Executable name
+TARGET := real_numbers_app
+
+# Default target
+all: $(TARGET)
+
+# Link the executable
+$(TARGET): $(OBJS)
+	@echo "Linking $@"
+	$(CXX) $(CXXFLAGS) $^ -o $@  # $^ means all prerequisites (the .o files)
+	@echo "Built $(TARGET) successfully."
+
+# Rule to compile main.cc (which is in the current directory)
+main.o: main.cc real_numbers/real_numbers_utils.h real_numbers/real_numbers_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Rule to compile real_numbers_utils.cc (which is in real_numbers/ directory)
+# We specify the path to the .cc file and output the .o file in the current directory for simplicity
+real_numbers_utils.o: real_numbers/real_numbers_utils.cc real_numbers/real_numbers_utils.h real_numbers/real_numbers_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@ # $< is the first prerequisite (the .cc file)
+
+# Target to clean up
+clean:
+	@echo "Cleaning up..."
+	-rm -f $(TARGET) $(OBJS) # Add - to ignore errors if files don't exist
+	@echo "Clean complete."
+
+# Phony targets
+.PHONY: all clean

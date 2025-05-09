@@ -1,62 +1,52 @@
-# Compiler settings
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -I. # Use C++17 for std::optional, -I. to find lines/ dir
-LDFLAGS =
+# Compiler
+CXX := g++
+# Compiler flags for C++17
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -g 
+# Include directories
+INCLUDE_DIRS := -I. -Ireal_numbers -Ilinear_equations # Added linear_equations
 
 # Source files
-SRCS = main.cc lines/slope.cc
-# Object files (derived from source files)
-OBJS = $(SRCS:.cc=.o)
+SRCS := main.cc \
+        real_numbers/real_numbers_utils.cc \
+        linear_equations/linear_equations_utils.cc # Added new source
+
+# Object files
+OBJS := main.o \
+        real_numbers_utils.o \
+        linear_equations_utils.o # Added new object
 
 # Executable name
-TARGET = main
+TARGET := math_app # Renamed for general math app
 
 # Default target
 all: $(TARGET)
 
 # Link the executable
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $(TARGET) $(LDFLAGS)
+	@echo "Linking $@"
+	$(CXX) $(CXXFLAGS) $^ -o $@
+	@echo "Built $(TARGET) successfully."
 
-# Compile source files into object files
-# This generic rule handles both main.cc and lines/slope.cc
-%.o: %.cc lines/slope.h lines/geometry_types.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Rule to compile main.cc
+main.o: main.cc real_numbers/real_numbers_utils.h linear_equations/linear_equations_utils.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
-# Compile main.cc specifically (alternative if generic rule has issues)
-# main.o: main.cc lines/slope.h lines/geometry_types.h
-#	$(CXX) $(CXXFLAGS) -c main.cc -o main.o
+# Rule to compile real_numbers_utils.cc
+real_numbers_utils.o: real_numbers/real_numbers_utils.cc real_numbers/real_numbers_utils.h real_numbers/real_numbers_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
-# Compile lines/slope.cc specifically (alternative)
-# lines/slope.o: lines/slope.cc lines/slope.h lines/geometry_types.h
-#	$(CXX) $(CXXFLAGS) -c lines/slope.cc -o lines/slope.o
+# Rule to compile linear_equations_utils.cc (NEW)
+linear_equations_utils.o: linear_equations/linear_equations_utils.cc linear_equations/linear_equations_utils.h linear_equations/linear_equations_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
-# Clean up build files
+# Target to clean up
 clean:
-	rm -f $(OBJS) $(TARGET)
+	@echo "Cleaning up..."
+	-rm -f $(TARGET) $(OBJS)
+	@echo "Clean complete."
 
 # Phony targets
 .PHONY: all clean
-
-
-
-
-
-
-
-
-
-
-
-
-
-# CC = g++
-# CFLAGS = -Wall -std=c++11
-
-# all: main
-
-# main: main.cc lines/slope.cc
-# 	$(CC) $(CFLAGS) main.cc lines/slope.cc -o main
-
-# clean:
-# 	rm -f main
