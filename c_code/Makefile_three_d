@@ -1,0 +1,54 @@
+# Compiler
+CC := gcc
+# Compiler flags for C99/C11, with math library
+CFLAGS := -std=c11 -Wall -Wextra -Wno-unused-parameter -pedantic -g
+LDLIBS := -lm # Link math library
+
+# Include directories (relative to where make is run - c_math_project/)
+INCLUDE_DIRS := -I. -Ithree_d_geometry 
+
+# Source files for the 3D Geometry module
+# main_three_d.c is in the root of c_math_project/
+# three_d_geometry_utils.c is in three_d_geometry/
+SRCS_3D := main_three_d.c \
+           three_d_geometry/three_d_geometry_utils.c
+
+# Object files (derive .o names, these will be created in the current directory)
+# This creates: main_three_d.o three_d_utils.o (without paths for three_d_utils.o)
+OBJS_3D := $(notdir $(SRCS_3D:.c=.o))
+
+# Executable name for the 3D geometry test app
+TARGET_3D := c_three_d_app
+
+# Default target: build the 3D geometry executable
+all: $(TARGET_3D)
+
+# Rule to link the 3D geometry executable
+# $(OBJS_3D) will expand to 'main_three_d.o three_d_utils.o'
+$(TARGET_3D): $(OBJS_3D)
+	@echo "Linking $@ (3D Geometry App)"
+	$(CC) $(CFLAGS) $^ $(LDLIBS) -o $@
+	@echo "Built $(TARGET_3D) successfully."
+
+# Rule to compile main_three_d.c into main_three_d.o (in the current directory)
+# $< is main_three_d.c, $@ is main_three_d.o
+main_three_d.o: main_three_d.c three_d_geometry/three_d_geometry_utils.h three_d_geometry/three_d_geometry_types.h
+	@echo "Compiling $< to $@"
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Rule to compile three_d_geometry/three_d_geometry_utils.c into three_d_utils.o (in the current directory)
+# $< is three_d_geometry/three_d_geometry_utils.c, $@ is three_d_utils.o
+# Note: The object file name for the utils is kept simple as 'three_d_utils.o'
+# If you had multiple utils files from different dirs, you might want to preserve path in obj name or put objs in subdirs.
+three_d_utils.o: three_d_geometry/three_d_geometry_utils.c three_d_geometry/three_d_geometry_utils.h three_d_geometry/three_d_geometry_types.h
+	@echo "Compiling $< to $@"
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Target to clean up object files and the executable from the current directory
+clean:
+	@echo "Cleaning up 3D Geometry App..."
+	-rm -f $(TARGET_3D) $(OBJS_3D) 
+	@echo "Clean complete."
+
+# Phony targets (targets that don't represent actual files)
+.PHONY: all clean

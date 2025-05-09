@@ -1,0 +1,38 @@
+CC := gcc
+CFLAGS := -std=c11 -Wall -Wextra -pedantic -g
+LDLIBS := -lm
+INCLUDE_DIRS := -I. -Ipolynomials_quadratics
+
+SRCS := main_poly_quad.c \
+        polynomials_quadratics/polynomial_utils.c \
+        polynomials_quadratics/quadratic_utils.c
+
+OBJS := $(notdir $(SRCS:.c=.o))
+
+TARGET := c_poly_quad_app
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	@echo "Linking $@"
+	$(CC) $(CFLAGS) $^ $(LDLIBS) -o $@
+	@echo "Built $(TARGET) successfully."
+
+main_poly_quad.o: main_poly_quad.c polynomials_quadratics/polynomial_utils.h polynomials_quadratics/quadratic_utils.h polynomials_quadratics/poly_quad_types.h
+	@echo "Compiling $< to $@"
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+polynomial_utils.o: polynomials_quadratics/polynomial_utils.c polynomials_quadratics/polynomial_utils.h polynomials_quadratics/poly_quad_types.h
+	@echo "Compiling $< to $@"
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+quadratic_utils.o: polynomials_quadratics/quadratic_utils.c polynomials_quadratics/quadratic_utils.h polynomials_quadratics/poly_quad_types.h
+	@echo "Compiling $< to $@"
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+clean:
+	@echo "Cleaning up..."
+	-rm -f $(TARGET) $(OBJS)
+	@echo "Clean complete."
+
+.PHONY: all clean

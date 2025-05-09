@@ -1,0 +1,33 @@
+CC := gcc
+CFLAGS := -std=c11 -Wall -Wextra -pedantic -g
+LDLIBS := -lm
+INCLUDE_DIRS := -I. -Igeometry
+
+SRCS := main_geometry.c \
+        geometry/solid_geometry_utils.c
+
+OBJS := $(notdir $(SRCS:.c=.o))
+
+TARGET := c_geometry_app
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	@echo "Linking $@"
+	$(CC) $(CFLAGS) $^ $(LDLIBS) -o $@
+	@echo "Built $(TARGET) successfully."
+
+main_geometry.o: main_geometry.c geometry/solid_geometry_utils.h geometry/geometry_types.h
+	@echo "Compiling $< to $@"
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+solid_geometry_utils.o: geometry/solid_geometry_utils.c geometry/solid_geometry_utils.h geometry/geometry_types.h
+	@echo "Compiling $< to $@"
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+clean:
+	@echo "Cleaning up..."
+	-rm -f $(TARGET) $(OBJS)
+	@echo "Clean complete."
+
+.PHONY: all clean
