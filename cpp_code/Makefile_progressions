@@ -1,0 +1,52 @@
+# Compiler
+CXX := g++
+# Compiler flags for C++17
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -g
+# Include directories
+INCLUDE_DIRS := -I. -Iprogressions
+
+# Source files
+SRCS := main_progressions.cc \
+        progressions/arithmetic_progression_utils.cc \
+        progressions/geometric_progression_utils.cc
+
+# Object files
+OBJS := main_progressions.o \
+        arithmetic_progression_utils.o \
+        geometric_progression_utils.o
+
+# Executable name
+TARGET := progressions_app
+
+# Default target
+all: $(TARGET)
+
+# Link the executable
+$(TARGET): $(OBJS)
+	@echo "Linking $@"
+	$(CXX) $(CXXFLAGS) $^ -o $@
+	@echo "Built $(TARGET) successfully."
+
+# Rule to compile main_progressions.cc
+main_progressions.o: main_progressions.cc progressions/arithmetic_progression_utils.h progressions/geometric_progression_utils.h progressions/progressions_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Rule to compile arithmetic_progression_utils.cc
+arithmetic_progression_utils.o: progressions/arithmetic_progression_utils.cc progressions/arithmetic_progression_utils.h progressions/progressions_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Rule to compile geometric_progression_utils.cc
+geometric_progression_utils.o: progressions/geometric_progression_utils.cc progressions/geometric_progression_utils.h progressions/progressions_types.h
+	@echo "Compiling $<"
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Target to clean up
+clean:
+	@echo "Cleaning up..."
+	-rm -f $(TARGET) $(OBJS)
+	@echo "Clean complete."
+
+# Phony targets
+.PHONY: all clean
